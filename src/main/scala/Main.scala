@@ -1,12 +1,14 @@
 import scala.annotation.meta.field
 import java.lang.reflect.Field
 import scala.collection.View.Empty
+import model.Player
 
-object Battleship{
+object Battleshipe{
   def main(args: Array[String]): Unit ={
     println("Bitte geben Sie ihren Namen ein:")
     val student = Player(scala.io.StdIn.readLine())
     println("Hello and Welcome to Batteship, " + student.name)
+    println("Wie groß möchten sie ihr Feld haben? Die Breite und Höhe muss mindestens 2 Felder breit sein")
     val playField: List[List[Boolean]] = List(
       List(true, false, false, false, true, true, true, true, true),
       List(true, false, false, false, false, false, false, false, false),
