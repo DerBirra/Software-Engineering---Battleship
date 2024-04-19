@@ -1,38 +1,4 @@
-
-enum Ship:
-    case Carrier, Battleship, Destroyer, Submarine, PatrolBoat
-    
-enum Shipsize:
-    case Two, Three, Four, Five 
-
-enum Shipindex:
-    case Two, Three, Four, Five
-
-case class Battleship(stype: Ship, size: Shipsize, index: Shipindex)
-
-val ship1= Battleship(Ship.Carrier, Shipsize.Five, Shipindex.Two)
-val ship2= Battleship(Ship.Battleship, Shipsize.Five, Shipindex.Two)
-val ship3= Battleship(Ship.Destroyer, Shipsize.Four, Shipindex.Two)
-val ship4= Battleship(Ship.Submarine, Shipsize.Three, Shipindex.Two)
-val ship5= Battleship(Ship.PatrolBoat, Shipsize.Two, Shipindex.Two)
-
-
-ship2.index
-ship1.size
-ship2.size
-ship3.size
-ship4.size
-ship5.size
-
-// val gameField = new GameField(fieldSize, fieldSize)
-//     gameField.generateField()
-//     println(gameField.printField())
-case class Player(name: String) {
-   override def toString(): String = name
-}
-val player = Player("Miki")
-player.name
-
+package model
 class GameField (row : Int, col : Int) {
 
     var field: Array[Array[Char]] = Array.ofDim[Char](row, col)
@@ -46,8 +12,6 @@ class GameField (row : Int, col : Int) {
             j <- 0 until col
 
         } field(i)(j) = ' '
-
-
     }
 
     def printField(): String = {
@@ -100,11 +64,9 @@ class GameField (row : Int, col : Int) {
         
             case Some(content) => content == char
             case None => false
+        
         }
+    
     }
+  
 }
-val field = new GameField(9,9)
-field.generateField()
-field.printField()
-field.cell(1,1,Some('x'))
-field.isCellContent(1,1,'x')
