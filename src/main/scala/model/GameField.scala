@@ -12,72 +12,55 @@ class GameField (row : Int, col : Int) {
             j <- 0 until col
 
         } field(i)(j) = ' '
-
-
     }
 
     def printField(): String = {
-        val builder = new StringBuilder
+        // Oberen Rand des Spielfelds erzeugen
+        val top = "+" + "-" * col * 3 + "+\n"
 
-        // oberen Rand des Spielfelds ausgeben
-        builder.append("+" + "-" * col * 3 + "+\n")
+        // Feldinhalte erzeugen
+        val fieldContent = (for {
+            i <- 0 until row
+            j <- 0 until col
+        } yield {
+            // Rahmen links
+            val leftBorder = if (j == 0) "|" else ""
 
-        for {
-        // indexe i und j für alle Zellen
-                i <- 0 until row
-                j <- 0 until col
-        } {
-        // Rahmen links
-         if (j == 0) builder.append("|")
+            // Inhalt der Zelle, wenn nicht leer als # und wenn bereits angegriffen als X
+            val cellContent = if (field(i)(j) == ' ') " # " else s" ${field(i)(j)} "
 
-         // Inhalt der Zelle wenn nicht leer als # und wenn bereits angegriffen als X
-         if (field(i)(j) == ' ') builder.append(" # ")
-         else builder.append(" " + field(i)(j) + " ")
+            // Rahmen rechts
+            val rightBorder = if (j == col - 1) "|\n" else ""
 
-        // Rahmen rechts
-         if (j == col - 1) builder.append("|\n")
-        }
+            leftBorder + cellContent + rightBorder
+        }).mkString
 
-        // unteren Rand des Spielfelds ausgeben
-        builder.append("+" + "-" * col * 3 + "+\n")
-        builder.toString()
-    }   
+        // Unteren Rand des Spielfelds erzeugen
+        val bottom = "+" + "-" * col * 3 + "+\n"
 
-
-    def setCell(rowIdx: Int, colIdx: Int, value: Char): Unit = {
-    
-        // wenn die Koordinaten innerhalb des Spielfelds liegen
-        if (rowIdx >= 1 && rowIdx < row+1 && colIdx >= 1 && colIdx < col+1) {
-        
-            // Zelle auf angegriffen setzen
-            field(rowIdx-1)(colIdx-1) = value
-        
-        } else {
-            // Error Nachricht ausgeben
-            println("Ungültige Zellkoordinaten")
-        
-        }
+        // Das gesamte Spielfeld zusammenbauen
+        top + fieldContent + bottom
     }
 
-    def getCell(rowIdx: Int, colIdx: Int): Option[Char] = {
-    
-        // wenn die Koordinaten innerhalb des Spielfelds liegen
-        if (rowIdx >= 0 && rowIdx < row && colIdx >= 0 && colIdx < col) {
-        
-            // Inhalt der Zelle zurückgeben
-            Some(field(rowIdx)(colIdx))
-        
-        } else {
-        
-            println("Ungültige Zellkoordinaten")
-            None
-        
-        }
+    def cell(rowIdx: Int, colIdx: Int, value: Option[Char] = None): Option[Char] = {
+    // wenn die Koordinaten innerhalb des Spielfelds liegen
+    if (rowIdx >= 1 && rowIdx <= row && colIdx >= 1 && colIdx <= col) {
+      // Wenn ein Wert angegeben ist, setze die Zelle auf diesen Wert
+      value.foreach { v =>
+        field(rowIdx - 1)(colIdx - 1) = v
+      }
+      // Gib den aktuellen Wert der Zelle zurück
+      Some(field(rowIdx - 1)(colIdx - 1))
+    } else {
+      // Fehlermeldung ausgeben und None zurückgeben
+      println("Ungültige Zellkoordinaten")
+      None
     }
+  }
 
     def isCellContent(rowIdx: Int, colIdx: Int, char: Char): Boolean = {
     
-        getCell(rowIdx, colIdx) match {
+        cell(rowIdx, colIdx) match {
         
             case Some(content) => content == char
             case None => false

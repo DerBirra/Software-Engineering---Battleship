@@ -23,25 +23,88 @@ ship2.size
 ship3.size
 ship4.size
 ship5.size
-case class Cell(value: Int){
-    def isSet:Boolean = value != 0
+
+// val gameField = new GameField(fieldSize, fieldSize)
+//     gameField.generateField()
+//     println(gameField.printField())
+case class Player(name: String) {
+   override def toString(): String = name
 }
-val cell1 = Cell(2)
-cell1.isSet
+val player = Player("Miki")
+player.name
 
-val cell2= Cell(0)
-cell2.isSet
+class GameField (row : Int, col : Int) {
 
-case class Matrix[T](rows: Vector[Vector[T]]){
-    def this(size: Int, filling: T) = this(Vector.tabulate(size,size){(row, col)=>filling})
-    val size: Int = rows.size
-    def cell(row: Int, col: Int): T = rows(row)(col)
-    def row(row: Int) = rows(row)
-    def fill(filling: T): Matrix[T] = copy(Vector.tabulate(size,size){(row,col)=>filling})
-    def replaceCell(row:Int, col:Int, cell: T):Matrix[T] = copy(rows.updated(row,rows(row).updated(col,cell)))
+    var field: Array[Array[Char]] = Array.ofDim[Char](row, col)
+
+    def generateField(): Unit = {
+
+        // Spielfeld mit Leerzeichen füllen
+        for {
+
+            i <- 0 until row
+            j <- 0 until col
+
+        } field(i)(j) = ' '
+
+
+    }
+
+    def printField(): String = {
+        // Oberen Rand des Spielfelds erzeugen
+        val top = "+" + "-" * col * 3 + "+\n"
+
+        // Feldinhalte erzeugen
+        val fieldContent = (for {
+            i <- 0 until row
+            j <- 0 until col
+        } yield {
+            // Rahmen links
+            val leftBorder = if (j == 0) "|" else ""
+
+            // Inhalt der Zelle, wenn nicht leer als # und wenn bereits angegriffen als X
+            val cellContent = if (field(i)(j) == ' ') " # " else s" ${field(i)(j)} "
+
+            // Rahmen rechts
+            val rightBorder = if (j == col - 1) "|\n" else ""
+
+            leftBorder + cellContent + rightBorder
+        }).mkString
+
+        // Unteren Rand des Spielfelds erzeugen
+        val bottom = "+" + "-" * col * 3 + "+\n"
+
+        // Das gesamte Spielfeld zusammenbauen
+        top + fieldContent + bottom
+    }
+
+    def cell(rowIdx: Int, colIdx: Int, value: Option[Char] = None): Option[Char] = {
+    // wenn die Koordinaten innerhalb des Spielfelds liegen
+    if (rowIdx >= 1 && rowIdx <= row && colIdx >= 1 && colIdx <= col) {
+      // Wenn ein Wert angegeben ist, setze die Zelle auf diesen Wert
+      value.foreach { v =>
+        field(rowIdx - 1)(colIdx - 1) = v
+      }
+      // Gib den aktuellen Wert der Zelle zurück
+      Some(field(rowIdx - 1)(colIdx - 1))
+    } else {
+      // Fehlermeldung ausgeben und None zurückgeben
+      println("Ungültige Zellkoordinaten")
+      None
+    }
+  }
+
+    def isCellContent(rowIdx: Int, colIdx: Int, char: Char): Boolean = {
+    
+        cell(rowIdx, colIdx) match {
+        
+            case Some(content) => content == char
+            case None => false
+        }
+    }
 }
-
-val matrix = Matrix(Vector(Vector(cell1,cell2)))
-
-//val field = GameField(9,9)
-
+val field = new GameField(9,9)
+field.generateField()
+field.printField()
+field.cell(1,1,Some('x'))
+field.isCellContent(1,1,'x')

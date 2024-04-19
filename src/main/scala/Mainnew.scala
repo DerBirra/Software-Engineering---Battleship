@@ -33,7 +33,7 @@ object Battleships{
 
       } else {
 
-        gameField.setCell(rowInput, colInput, 'x');
+        gameField.cell(rowInput, colInput, Some('X'));
         println(gameField.printField())
 
       }
