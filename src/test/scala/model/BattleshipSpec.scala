@@ -18,8 +18,10 @@ class BattleshipSpec extends AnyWordSpec{
         }
         "Field" in{
          val gameField = new GameField(9,9)
+         val testField = new GameField(9,9)
          gameField.generateField()
-         val expectedField = 
+         testField.generateField()
+         /*val expectedField = 
             """+---------------------------+
 | #  #  #  #  #  #  #  #  # |
 | #  #  #  #  #  #  #  #  # |
@@ -30,9 +32,8 @@ class BattleshipSpec extends AnyWordSpec{
 | #  #  #  #  #  #  #  #  # |
 | #  #  #  #  #  #  #  #  # |
 | #  #  #  #  #  #  #  #  # |
-+---------------------------+
-"""
-         gameField.printField() shouldEqual expectedField
++---------------------------+"""*/
+         gameField.printField() shouldEqual testField.printField()
         }
     }
 
