@@ -1,4 +1,5 @@
 package model
+
 class GameField (row : Int, col : Int) {
 
     var field: Array[Array[Char]] = Array.ofDim[Char](row, col)
@@ -12,34 +13,6 @@ class GameField (row : Int, col : Int) {
             j <- 0 until col
 
         } field(i)(j) = ' '
-    }
-
-    def printField(): String = {
-        // Oberen Rand des Spielfelds erzeugen
-        val top = "+" + "-" * col * 3 + "+\n"
-
-        // Feldinhalte erzeugen
-        val fieldContent = (for {
-            i <- 0 until row
-            j <- 0 until col
-        } yield {
-            // Rahmen links
-            val leftBorder = if (j == 0) "|" else ""
-
-            // Inhalt der Zelle, wenn nicht leer als # und wenn bereits angegriffen als X
-            val cellContent = if (field(i)(j) == ' ') " # " else s" ${field(i)(j)} "
-
-            // Rahmen rechts
-            val rightBorder = if (j == col - 1) "|\n" else ""
-
-            leftBorder + cellContent + rightBorder
-        }).mkString
-
-        // Unteren Rand des Spielfelds erzeugen
-        val bottom = "+" + "-" * col * 3 + "+\n"
-
-        // Das gesamte Spielfeld zusammenbauen
-        top + fieldContent + bottom
     }
 
     def cell(rowIdx: Int, colIdx: Int, value: Option[Char] = None): Option[Char] = {
@@ -67,6 +40,42 @@ class GameField (row : Int, col : Int) {
         
         }
     
+    }
+
+    override def toString: String = {
+
+        // Oberen Rand des Spielfelds erzeugen
+        val top = "+" + "-" * col * 2 + "+\n"
+
+        // Feldinhalte erzeugen
+        val fieldContent = (for {
+            i <- 0 until row
+            j <- 0 until col
+        } yield {
+            // Rahmen links
+            val leftBorder = if (j == 0) "|" else ""
+
+            // Inhalt der Zelle, wenn nicht leer als # und wenn bereits angegriffen als X
+            val cellContent = if (field(i)(j) == ' ') " # " else s" ${field(i)(j)} "
+
+            // Rahmen rechts
+            val rightBorder = if (j == col - 1) "|\n" else ""
+
+            leftBorder + cellContent + rightBorder
+        }).mkString
+
+        // Unteren Rand des Spielfelds erzeugen
+        val bottom = "+" + "-" * col * 2 + "+\n"
+
+        // Das gesamte Spielfeld zusammenbauen
+        top + fieldContent + bottom
+
+    }
+
+    def getGamFieldSize(): Int = {
+
+      return row
+
     }
   
 }
