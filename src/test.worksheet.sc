@@ -95,24 +95,27 @@ class GameField (row : Int, col : Int) {
 
         // Überprüfen, ob die Zellen, die das Schiff einnehmen würde, frei sind
         val cellsOccupied =
-        if (orientation == 'h') (0 until size).forall(i => field(shipRow)(shipCol + i) == ' ')
-        else (0 until size).forall(i => field(shipRow + i)(shipCol) == ' ')
+        if (orientation == 'h') (0 until size).forall(i => isCellContent(shipRow,shipCol + i,  ' '))
+        else (0 until size).forall(i => isCellContent(shipRow + i,shipCol ,' '))
 
         if (inBounds && cellsOccupied) {
         // Schiff platzieren
         if (orientation == 'h') {
         for (i <- 0 until size) {
-            field(shipRow)(shipCol + i) = 'O'
+            cell(shipRow,shipCol + i,Some('O'))
             ships = ships :+ (shipRow, shipCol + i)
         }
         } else {
         for (i <- 0 until size) {
-            field(shipRow + i)(shipCol) = 'O'
+            cell(shipRow + i,shipCol,Some('O'))
             ships = ships :+ (shipRow + i, shipCol)
             }
         }
         true
-        } else false
+        } else{ 
+            println("Das Schiff kann nicht an dieser Position platziert werden. Bitte wählen Sie eine andere Position.")
+            false
+            }
     }
 
     def cell(rowIdx: Int, colIdx: Int, value: Option[Char] = None): Option[Char] = {
@@ -133,14 +136,17 @@ class GameField (row : Int, col : Int) {
 
     def attack(position: (Int, Int)): Boolean = {
         val (rowIdx, colIdx) = position
-        if (field(rowIdx)(colIdx) == 'O') {
-            field(rowIdx)(colIdx) = 'X' // Treffer markieren
-            ships = ships.filterNot { case (r, c) => r == rowIdx && c == colIdx }
-            true // Treffer
-            } else {
-            field(rowIdx - 1)(colIdx - 1) = '*' // Fehlschlag markieren
-            false // Fehlschlag
-            }
+        val targetChar = cell(rowIdx, colIdx)
+
+        targetChar match {
+            case Some('O') =>
+                cell(rowIdx, colIdx, Some('X')) // Treffer markieren
+                ships = ships.filterNot { case (r, c) => r == rowIdx && c == colIdx }
+                true // Treffer
+            case _ =>
+                cell(rowIdx, colIdx, Some('*')) // Fehlschlag markieren
+                false // Fehlschlag
+        }
     }
 
     def isGameOver(): Boolean = ships.isEmpty
@@ -159,7 +165,7 @@ field.printField()
 //field.cell(1,1,Some('x'))
 //field.isCellContent(1,1,'x')
 
-field.placeShip(ship1, (0, 1), 'v')
+field.placeShip(ship1, (1, 1), 'h')
 field.placeShip(ship2, (2, 2), 'h')
 field.placeShip(ship3, (3, 3), 'h')
 field.placeShip(ship4, (4, 4), 'h')
@@ -167,11 +173,9 @@ field.placeShip(ship5, (5, 5), 'h')
 
 field.printField()
 field.attack((1, 1))
-field.attack((1, 2))
-field.attack((1, 3))
-field.attack((1, 4))
-field.attack((1, 5))
 field.attack((1, 6))
 field.attack((2, 2))
-field.attack((5, 5))
+field.attack((3, 2))
+field.attack((4, 2))
+field.attack((5, 2))
 field.printField()
