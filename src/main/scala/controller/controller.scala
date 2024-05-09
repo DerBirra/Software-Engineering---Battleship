@@ -47,6 +47,9 @@ class Controller(var gameField:GameField) extends Observable {
             
             }
         }
+
+        println("Alle Schiffe platziert. Das Spiel beginnt.")
+
     }
 
     private def readCoordinates(fieldSize: Int): (Int, Int) = {
