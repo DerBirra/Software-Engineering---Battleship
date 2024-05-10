@@ -1,9 +1,9 @@
 name: Scala CI
 on:
   push:
-    branches: [main, Mikail]
+    branches: [Development, Mikail]
   pull_request:
-    branches: [main]
+    branches: [Mikail]
 jobs:
   build:
     runs-on: ubuntu-latest
