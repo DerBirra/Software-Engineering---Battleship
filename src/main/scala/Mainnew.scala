@@ -3,6 +3,7 @@ import controller.controller
 import aview.TUI
 import scala.io.StdIn.readLine
 object Battleships{
+  
   def main(args: Array[String]): Unit = {
       val controller = new controller()
 
