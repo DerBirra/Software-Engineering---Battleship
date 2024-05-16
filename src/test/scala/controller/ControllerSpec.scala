@@ -41,7 +41,8 @@ class ControllerSpec extends AnyWordSpec {
         val ship = Ship(ShipType.Carrier, ShipSize.Five)
         val position = (1, 1)
         val orientation = 'h'
-        controller.placeShip(1, ship, position, orientation)
+        controller.placeShip(1, ship, position, orientation) shouldEqual true
+        controller.placeShip(2, ship, position, orientation) shouldEqual true
         // Check if ship is correctly placed on the board
         // This might require mocking or stubbing the GameBoard methods
         }
@@ -49,7 +50,9 @@ class ControllerSpec extends AnyWordSpec {
         "make move" in {
         val position = Position(1, 1)
         val hit = controller.makeMove(1, position)
-        hit shouldEqual false // Assuming the move results in a hit
+        val hit2 = controller.makeMove(2, position)
+        hit shouldEqual true // Assuming the move results in a hit
+        hit2 shouldEqual true
         }
 
         "get player board" in {

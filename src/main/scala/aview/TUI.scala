@@ -55,19 +55,29 @@ class TUI(controller: Controller, player: Int) extends Observer {
 
     def placeShips(player: Int): Unit = {
 
-        println(s"Spieler $player: Platziere deine Schiffe")
+            println(s"Spieler $player: Platziere deine Schiffe")
 
-        val shipList = controller.getShipsToPlace(player)
-        var index = 0
+            val shipList = controller.getShipsToPlace(player)
+            var index = 0
 
-        shipList.foreach { element =>
+            while (index < shipList.length) {
 
-        val position = readCoordinates()
-        val orientation = readOrientation()
-        controller.placeShip(player, shipList(index), position, orientation)
-        index += 1;
+                val position = readCoordinates()
+                val orientation = readOrientation()
 
-        }
+                if (!(controller.placeShip(player, shipList(index), position, orientation))) {
+
+                    controller.placeShip(player, shipList(index), position, orientation)
+                    
+                } else {
+                    
+                    controller.placeShip(player, shipList(index), position, orientation)
+                    index +=1;
+
+                }
+            
+            }
+
     }
 
     def readCoordinates(): (Int, Int) = {

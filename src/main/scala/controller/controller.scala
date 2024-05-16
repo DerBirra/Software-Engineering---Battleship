@@ -39,11 +39,15 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
 
     }
 
-    def placeShip(player: Int, ship: Ship, position: (Int, Int), orientation: Char): Unit = {
+    def placeShip(player: Int, ship: Ship, position: (Int, Int), orientation: Char): Boolean = {
 
-        if (player == 1) gameBoard1.placeShip(ship,position,orientation)
-        else gameBoard2.placeShip(ship,position,orientation)
+        var state = false
+
+        if (player == 1) state = gameBoard1.placeShip(ship,position,orientation)
+        else state = gameBoard2.placeShip(ship,position,orientation)
         notifyObservers
+        return state
+        
 
 
     }
