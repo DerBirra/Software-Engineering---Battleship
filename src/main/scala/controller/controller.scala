@@ -1,71 +1,78 @@
 package controller
 
-import model.{GameField,Ship,Shipsize,Battleship,Shipindex,Player}
 import util.Observable
-import scala.compiletime.uninitialized
+import model.{GameBoard,Ship, Position}
 
-class Controller() extends Observable {
+class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends Observable{
 
-    var gameField:GameField = uninitialized
+    def startGame(): Unit = {
 
-    def createPlayer(): Player = {
-    
-        println("Bitte geben Sie ihren Namen ein:")
-
-        Player(scala.io.StdIn.readLine())
-    
-    }
-
-    def createGameField(): GameField = {
-
-        println("Bitte geben Sie eine gewünschte Feldgröße ein:")
-
-        val fieldSize = scala.io.StdIn.readInt()
-        gameField = new GameField(fieldSize, fieldSize)
-        gameField.generateField()
-        println(gameField.toString())
-
-        gameField
-    }
-
-    def placeShips(gameField: GameField, ships: List[Battleship]): Unit = {
-
-        ships.foreach { ship =>
-            placeShip(gameField, ship)
-        }
-
-        println("Alle Schiffe platziert. Das Spiel beginnt.")
-    
-    }
-
-    def placeShip(gameField: GameField, ship: Battleship): Unit = {
-
-        var placed  = false
-
-        while (!placed) {
-            println(s"Platzieren Sie das Schiff ${ship.stype}:(größe ${ship.size})")
-
-            val (row, col) = gameField.readCoordinates(gameField.row)
-            val orientation = gameField.readOrientation()
-
-            placed = gameField.placeShip(ship, (row, col), orientation)
-
-            if (!placed) {
-    
-                println(s"Konnte Schiff ${ship.stype} nicht platzieren. Bitte versuchen Sie es erneut.")
-    
-            } else{
-    
-                println(s"Schiff ${ship.stype} erfolgreich platziert.")
-    
-            }
-    
-        }
+        gameBoard1.generateField()
+        gameBoard2.generateField()
+        notifyObservers
 
     }
 
-    def updateGameField: String = gameField.toString
+    def isGameOver(): Boolean = {
+
+        return gameBoard1.isGameOver() || gameBoard2.isGameOver()
+
+    }
+
+    def getShipsToPlace(player: Int): List[Ship] = {
+
+        if (player == 1) gameBoard1.getShipsToPlace()
+        else gameBoard2.getShipsToPlace()
+
+    }
+
+    def isCellContent(player: Int, row: Int, col: Int, or: Char): Boolean = {
+
+        if (player == 1) gameBoard1.isCellContent(row,col,or)
+        else gameBoard2.isCellContent(row,col,or)
+
+    }
+
+    def getGameBoardSize(): Int = {
+
+        return gameBoard1.getSize()
+
+    }
+
+    def placeShip(player: Int, ship: Ship, position: (Int, Int), orientation: Char): Boolean = {
+
+        var state = false
+
+        if (player == 1) state = gameBoard1.placeShip(ship,position,orientation)
+        else state = gameBoard2.placeShip(ship,position,orientation)
+        notifyObservers
+        return state
+        
 
 
+    }
+
+    def makeMove(player: Int, position: Position): Boolean = {
+
+        val x = position.getX()
+        val y = position.getY()
+
+        val hit = if (player == 1) gameBoard2.attack((x,y)) else gameBoard1.attack((x,y))
+        notifyObservers
+        hit
+
+    }
+
+    def getPlayerBoard(player: Int, hidden: Boolean = true): String = {
+    
+        if (player == 1) gameBoard1.printField(hidden) else gameBoard2.printField(hidden)
+    
+    }
+
+    def getOpponentBoard(player: Int): String = {
+    
+        if (player == 1) gameBoard2.printField(hidden = true) else gameBoard1.printField(hidden = true)
+    
+    }
 
 }
