@@ -1,28 +1,34 @@
-import model.{GameField, Player, Ship, Battleship}
-import controller.controller
+import model.{GameBoard, Player, ShipType}
+import controller.Controller
 import aview.TUI
-import scala.io.StdIn.readLine
-object Battleships{
-  
+import scala.io.StdIn.*
+
+object Main {
+ 
   def main(args: Array[String]): Unit = {
-      val controller = new controller()
 
-      val tui = new TUI(controller)
-      controller.notifyObservers
+    println("Geben sie die Feldgröße an")
+    var size = readInt()
 
-      var input: String = ""
+    val gameBoard1 = new GameBoard(size)
+    val gameBoard2 = new GameBoard(size)
+    val controller = new Controller(gameBoard1, gameBoard2)
+    val tui1 = new TUI(controller,1)
+    val tui2 = new TUI(controller,2)
 
-      println("Geben sie den Befehl zum starten des Spiels ein: start,exit")
+    controller.add(tui1)
+    controller.add(tui2)
 
-      input = readLine()
-      tui.startGame(input)
+    println("Geben sie 'start' ein um das spiel zu starten, oder 'exit' um es zu beenden.")
 
-      while(input != "exit") {
+    var input: String = ""
+    input = readLine()
 
-        input = readLine()
-        tui.startGame(input)
+    while (input != null) {
 
-      }
+      tui1.processInput(input)
+      tui2.processInput(input)
 
+    }
   }
 }
