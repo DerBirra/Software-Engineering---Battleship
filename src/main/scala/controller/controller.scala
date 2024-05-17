@@ -13,17 +13,11 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
 
     }
 
-    def isGameOver(): Boolean = {
-
-        return gameBoard1.isGameOver() || gameBoard2.isGameOver()
-
-    }
+    def isGameOver(): Boolean = gameBoard1.isGameOver() || gameBoard2.isGameOver()
 
     def getShipsToPlace(player: Int): List[Ship] = {
-
         if (player == 1) gameBoard1.getShipsToPlace()
         else gameBoard2.getShipsToPlace()
-
     }
 
     def isCellContent(player: Int, row: Int, col: Int, or: Char): Boolean = {
