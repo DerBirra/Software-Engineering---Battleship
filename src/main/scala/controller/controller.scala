@@ -1,9 +1,15 @@
 package controller
 
 import util.Observable
-import model.{GameBoard,Ship, Position}
+import model.{GameBoard,Ship, Position, PlaceShipStategyTemplate}
 
 class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends Observable{
+    
+    private var placeShipStrategy: PlaceShipStategyTemplate = _
+
+    def setPlaceShipStrategy(strategy: PlaceShipStategyTemplate): Unit = {
+        placeShipStrategy = strategy
+    }
 
     def startGame(): Unit = {
 
@@ -11,6 +17,16 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
         gameBoard2.generateField()
         notifyObservers
 
+    }
+
+    def startGameWithStrategy(): Unit = {
+        if (placeShipStrategy != null) {
+            gameBoard1 = placeShipStrategy.createNewGameField(gameBoard1.getSize())
+            gameBoard2 = placeShipStrategy.createNewGameField(gameBoard2.getSize())
+            notifyObservers
+        } else {
+            startGame()
+        }
     }
 
     def isGameOver(): Boolean = gameBoard1.isGameOver() || gameBoard2.isGameOver()

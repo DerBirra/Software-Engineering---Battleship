@@ -1,6 +1,6 @@
 package aview
 
-import model.{GameBoard, Player, Position}
+import model.{GameBoard, Player, Position, PlaceShipStrategy}
 import controller.Controller
 import util.Observer
 import scala.io.StdIn

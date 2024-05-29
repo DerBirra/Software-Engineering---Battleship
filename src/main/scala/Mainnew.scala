@@ -26,9 +26,13 @@ object Main {
 
     while (input != null) {
 
-      tui1.processInput(input)
-      tui2.processInput(input)
-
+      input match {
+        case "start" => tui1.processInput(input)
+        case "exit" => sys.exit(0)
+        case _ => 
+          println("Ungültiger Befehl. Bitte 'start' oder 'exit' eingeben.")
+          input = readLine()
+      }
     }
   }
 }
