@@ -143,6 +143,8 @@ class GameField (row : Int, col : Int) {
                 cell(rowIdx, colIdx, Some('X')) // Treffer markieren
                 ships = ships.filterNot { case (r, c) => r == rowIdx && c == colIdx }
                 true // Treffer
+             case Some('X') => true
+             case Some('*') => false
             case _ =>
                 cell(rowIdx, colIdx, Some('*')) // Fehlschlag markieren
                 false // Fehlschlag
@@ -178,8 +180,10 @@ field.attack((1, 1))
 field.attack((1, 1))
 field.attack((1, 6))
 field.attack((2, 2))
+field.attack((2, 2))
 field.attack((3, 2))
 field.attack((4, 2))
+field.attack((9, 2))
 field.attack((9, 2))
 field.printField()
 field.isGameOver()

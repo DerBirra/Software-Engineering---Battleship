@@ -155,6 +155,8 @@ case class GameBoard(size: Int) {
                 cell(rowIdx, colIdx, Some('X')) // Treffer markieren
                 ships = ships.filterNot { case (r, c) => r == rowIdx && c == colIdx }
                 true // Treffer
+            case Some('X') => true
+            case Some('*') => false
             case _ =>
                 cell(rowIdx, colIdx, Some('*')) // Fehlschlag markieren
                 false // Fehlschlag

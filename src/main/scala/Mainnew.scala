@@ -27,7 +27,11 @@ object Main {
     while (input != null) {
 
       input match {
-        case "start" => tui1.processInput(input)
+        case "start" => 
+          tui1.processInput(input) 
+          tui2.processInput(input)
+          tui2.gameLoop()
+
         case "exit" => sys.exit(0)
         case _ => 
           println("Ungültiger Befehl. Bitte 'start' oder 'exit' eingeben.")

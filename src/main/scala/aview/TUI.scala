@@ -9,26 +9,40 @@ import util.Observable
 class TUI(controller: Controller, player: Int) extends Observer {
 
     def processInput(input: String): Unit = {
-        input match {
-            case "start" => gameLoop()
-            case "exit" => sys.exit(0)
-            case _ => sys.exit(1)
-        
+    controller.startGame(player)
+    setplayerName(player)
+    input match {
+      case "start" =>
+        println("Wählen Sie die Methode zum Platzieren der Schiffe: 'freehand' oder 'strategy'")
+        val method = scala.io.StdIn.readLine().toLowerCase
+        method match {
+          case "freehand" =>
+            println("Spieler platzieren ihre Schiffe manuell.")
+            placeShips(player) //Spieler 1 Schiffe platzieren
+          case "strategy" =>
+            controller.setPlaceShipStrategy(new PlaceShipStrategy())
+            controller.startGameWithStrategy(player)
+          case _ =>
+            println("Ungültige Eingabe. Bitte wählen Sie 'freehand' oder 'strategy'.")
+            processInput("start")
         }
+      case "exit" => sys.exit(0)
+      case _ => println("Ungültiger Befehl. Bitte 'start' oder 'exit' eingeben.")
+    }
+    if (player == 2) gameLoop()
+  }
+
+    def setplayerName(playerstate: Int ): Unit = {
+        if(playerstate == 1){
+            println("Spieler 1 geben Sie ihren Namen an: ")
+            val player1 = Player(scala.io.StdIn.readLine())
+        }else if(playerstate == 2){
+            println("Spieler 2 geben Sie ihren Namen an: ")
+            val player2 = Player(scala.io.StdIn.readLine())
+        }else()
     }
 
     def gameLoop(): Unit = {
-
-        println("Spieler 1 geben Sie ihren Namen an: ")
-        val player1 = Player(scala.io.StdIn.readLine())
-
-        println("Spieler 2 geben Sie ihren Namen an: ")
-        val player2 = Player(scala.io.StdIn.readLine())
-
-        controller.startGame()
-
-        placeShips(1) //Spieler 1 Schiffe platzieren
-        placeShips(2) //Spieler 2 Schiffe platzieren
 
         var currentPlayer = 1
 
@@ -117,7 +131,7 @@ class TUI(controller: Controller, player: Int) extends Observer {
     }
 
     def attackOnce(player: Int): Position = {
-        val coordinates = getAttackedCoordinates()
+        val coordinates = getAttackedCoordinates(player)
         val row = coordinates._1
         val col = coordinates._2
 
@@ -127,7 +141,7 @@ class TUI(controller: Controller, player: Int) extends Observer {
 
             println("Bitte eine noch nicht verwendete Koordinate nehmen.")
 
-            val coordinates = getAttackedCoordinates()
+            val coordinates = getAttackedCoordinates(player)
             val row = coordinates._1
             val col = coordinates._2
             isCell = controller.isCellContent(player, row, col, 'X') || controller.isCellContent(player,row, col, '*')
@@ -136,26 +150,26 @@ class TUI(controller: Controller, player: Int) extends Observer {
         return new Position(row,col)
     }
 
-    def getAttackedCoordinates(): (Int, Int) = {
+    def getAttackedCoordinates(player :Int): (Int, Int) = {
     
-        var row = getPosition("Zeile")
+        var row = getPosition("Zeile", player)
 
         if (row == -1) return (-1,-1)
 
             while(row < 0 || row > controller.getGameBoardSize()+1){
 
                 println("Ungültige Eingabe für die Zeile.")
-                row = getPosition("Zeile")
+                row = getPosition("Zeile", player)
             }
 
-        var col = getPosition("Spalte")
+        var col = getPosition("Spalte", player)
 
         if (col == -1) return (-1,-1)
 
         while(col < 0 || col > controller.getGameBoardSize()+1){
 
             println("Ungültige Eingabe für die Spalte.")
-            col = getPosition("Spalte")
+            col = getPosition("Spalte",player)
 
         }
 
@@ -163,9 +177,9 @@ class TUI(controller: Controller, player: Int) extends Observer {
     
     }
 
-    def getPosition(linie: String): Int = {
+    def getPosition(linie: String, player :Int): Int = {
 
-        println(s"Bitte geben Sie die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):")
+        println(s" Spieler $player Bitte geben Sie die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):")
 
         val input = scala.io.StdIn.readLine()
 
@@ -176,7 +190,7 @@ class TUI(controller: Controller, player: Int) extends Observer {
             case _ => input.toIntOption match {
 
             case Some(value) => value
-            case None => getPosition(linie)
+            case None => getPosition(linie, player)
 
             }
         }

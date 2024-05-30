@@ -11,7 +11,7 @@ class ControllerSpec extends AnyWordSpec {
 
   "Controller" should {
         "start the game" in {
-        controller.startGame()
+        controller.startGame(1)
         gameBoard1.printField() should not be empty
         gameBoard2.printField() should not be empty
         }

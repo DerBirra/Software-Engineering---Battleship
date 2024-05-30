@@ -5,13 +5,15 @@ import model.{GameBoard,Ship, Position, PlaceShipStategyTemplate}
 
 class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends Observable{
     
-    private var placeShipStrategy: PlaceShipStategyTemplate = _
+    private var placeShipStrategy: PlaceShipStategyTemplate = null
 
     def setPlaceShipStrategy(strategy: PlaceShipStategyTemplate): Unit = {
         placeShipStrategy = strategy
     }
 
-    def startGame(): Unit = {
+    def startGame(player: Int): Unit = {
+
+        if(player == 2) return
 
         gameBoard1.generateField()
         gameBoard2.generateField()
@@ -19,13 +21,18 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
 
     }
 
-    def startGameWithStrategy(): Unit = {
+    def startGameWithStrategy(player: Int): Unit = {
         if (placeShipStrategy != null) {
-            gameBoard1 = placeShipStrategy.createNewGameField(gameBoard1.getSize())
-            gameBoard2 = placeShipStrategy.createNewGameField(gameBoard2.getSize())
+            if(player == 1){
+               gameBoard1 = placeShipStrategy.createNewGameField(gameBoard1.getSize()) 
+            }
+            if (player == 2){
+                gameBoard2 = placeShipStrategy.createNewGameField(gameBoard2.getSize())
+            }
+            
             notifyObservers
         } else {
-            startGame()
+            startGame(player)
         }
     }
 
