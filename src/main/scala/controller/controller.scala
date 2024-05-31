@@ -57,7 +57,7 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
         val x = position.getX()
         val y = position.getY()
 
-        val hit = if (player == 1) gameBoard2.attack((x,y)) else gameBoard1.attack((x,y))
+        val hit = if (player == 1) gameBoard2.attack(new Position(position.getX(),position.getY())) else gameBoard1.attack(new Position(position.getX(),position.getY()))
         notifyObservers
         hit
 

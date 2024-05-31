@@ -1,12 +1,16 @@
 package view
 
-import model.{GameBoard, Player, Position}
+import model.{GameBoard, Player, Position, TimerAddon}
 import controller.Controller
 import util.Observer
 import scala.io.StdIn
+import java.io.IOException
 import util.Observable
 
-class TUI(controller: Controller, player: Int) extends Observer {
+class TUI(controller: Controller, var player: Int) extends Observer {
+
+    private var player1name = ""
+    private var player2name = ""
 
     def processInput(input: String): Unit = {
 
@@ -23,29 +27,47 @@ class TUI(controller: Controller, player: Int) extends Observer {
     def gameLoop(): Unit = {
 
         println("Spieler 1 geben Sie ihren Namen an: ")
-        val player1 = Player(scala.io.StdIn.readLine())
+        player1name = Player(scala.io.StdIn.readLine()).toString
 
         println("Spieler 2 geben Sie ihren Namen an: ")
-        val player2 = Player(scala.io.StdIn.readLine())
+        player2name = Player(scala.io.StdIn.readLine()).toString
 
         controller.startGame()
 
         placeShips(1) //Spieler 1 Schiffe platzieren
         placeShips(2) //Spieler 2 Schiffe platzieren
 
-        var currentPlayer = 1
+        val tm = new TimerAddon()
+        tm.start()
+
+        var currentPlayer = player
 
         while(!isGameOver()) {
 
-            controller.makeMove(currentPlayer, attackOnce(currentPlayer))
+            if (controller.makeMove(currentPlayer, attackOnce(currentPlayer))) {
+
+                println("Getroffen.")
+
+            } else {
+
+                println("Nicht getroffen")
+
+            }
 
             currentPlayer = if (currentPlayer == 1) 2 else 1
+            player = currentPlayer
+            //println(currentPlayer)
 
             Thread.sleep(1000)
 
         }
 
-        println(s"Spieler $currentPlayer hat gewonnen!")
+        
+
+        val getGameTime = tm.getElapsedTime
+        tm.stop()
+
+        println(s"Spieler $currentPlayer hat gewonnen! Das Spiel ging $getGameTime Sekunden")
         sys.exit(0)
 
     }
@@ -58,8 +80,18 @@ class TUI(controller: Controller, player: Int) extends Observer {
 
     def placeShips(player: Int): Unit = {
 
-        println(s"Spieler $player: Platziere deine Schiffe")
+        if (player == 1) {
 
+            println(s"Spieler $player1name: Platziere deine Schiffe")
+
+
+        } else {
+
+            println(s"Spieler $player2name: Platziere deine Schiffe")
+
+
+        }
+        
         val shipList = controller.getShipsToPlace(player)
         var index = 0
 
@@ -127,9 +159,11 @@ class TUI(controller: Controller, player: Int) extends Observer {
 
     def attackOnce(player: Int): Position = {
     
-        val coordinates = getAttackedCoordinates()
-        val row = coordinates._1
-        val col = coordinates._2
+        
+        var coordinates = getAttackedCoordinates()
+
+        var row = coordinates._1
+        var col = coordinates._2
 
         var isCell = controller.isCellContent(player, row, col, 'X') || controller.isCellContent(player, row, col, '*')
 
@@ -137,10 +171,17 @@ class TUI(controller: Controller, player: Int) extends Observer {
 
             println("Bitte eine noch nicht verwendete Koordinate nehmen.")
 
-            val coordinates = getAttackedCoordinates()
-            val row = coordinates._1
-            val col = coordinates._2
+            coordinates = getAttackedCoordinates()
+            row = coordinates._1
+            col = coordinates._2
             isCell = controller.isCellContent(player, row, col, 'X') || controller.isCellContent(player,row, col, '*')
+
+            if (!isCell) {
+
+                return new Position(row,col)
+
+            }
+
         }
             
         return new Position(row,col)
@@ -177,9 +218,17 @@ class TUI(controller: Controller, player: Int) extends Observer {
 
     def getPosition(linie: String): Int = {
 
-        println(s"Bitte geben Sie die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):")
+        if (player == 1) {
+            
+            println(s"$player1name bitte gib die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):")
 
-        val input = scala.io.StdIn.readLine()
+        } else {
+
+            println(s"$player2name bitte gib die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):")
+
+        } 
+
+        var input = scala.io.StdIn.readLine()
 
         input.toLowerCase match {
 
@@ -192,13 +241,20 @@ class TUI(controller: Controller, player: Int) extends Observer {
 
             }
         }
+
+        
+
     }
 
     def displayBoards(): Unit = {
-        println(s"Spieler $player: Dein eigenes Spielbrett")
-        println(controller.getPlayerBoard(player, hidden = false))
-        println(s"Spieler $player: Das gegnerische Spielbrett")
-        println(controller.getOpponentBoard(player))
+        println(s"Spieler $player1name: Dein eigenes Spielbrett")
+        println(controller.getPlayerBoard(1, hidden = false))
+        println(s"Spieler $player1name: Das gegnerische Spielbrett")
+        println(controller.getOpponentBoard(1))
+        println(s"Spieler $player2name: Dein eigenes Spielbrett")
+        println(controller.getPlayerBoard(2, hidden = false))
+        println(s"Spieler $player2name: Das gegnerische Spielbrett")
+        println(controller.getOpponentBoard(2))
     }
     
 

@@ -1,9 +1,13 @@
 package main.scala
 
-import model.{GameBoard, Player, ShipType}
+import model.{GameBoard, Player, ShipType, TimerAddon}
 import controller.Controller
 import view.TUI
 import scala.io.StdIn.*
+import scala.concurrent._
+import scala.concurrent.duration._
+import ExecutionContext.Implicits.global
+import scala.util.{Success, Failure}
 
 
 object Main {
@@ -17,10 +21,10 @@ object Main {
     val gameBoard2 = new GameBoard(size)
     val controller = new Controller(gameBoard1, gameBoard2)
     val tui1 = new TUI(controller,1)
-    val tui2 = new TUI(controller,2)
+
+
 
     controller.add(tui1)
-    controller.add(tui2)
 
     println("Geben sie 'start' ein um das spiel zu starten, oder 'exit' um es zu beenden.")
 
@@ -30,7 +34,6 @@ object Main {
     while (input != null) {
 
       tui1.processInput(input)
-      tui2.processInput(input)
 
     }
   }

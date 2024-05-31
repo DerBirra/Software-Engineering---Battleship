@@ -107,7 +107,6 @@ case class GameBoard(size: Int) {
 
         } else{
 
-            println("Das Schiff kann nicht an dieser Position platziert werden. Bitte wählen Sie eine andere Position.")
             false
 
         }
@@ -115,11 +114,12 @@ case class GameBoard(size: Int) {
 
     def getShipsToPlace(): List[Ship] = {
 
-        List(Ship(ShipType.Carrier, ShipSize.Five),
+        /*List(Ship(ShipType.Carrier, ShipSize.Five),
              Ship(ShipType.Destroyer, ShipSize.Four),
              Ship(ShipType.Submarine, ShipSize.Three),
              Ship(ShipType.PatrolBoat, ShipSize.Two) )
-             
+         */
+        List(Ship(ShipType.Carrier, ShipSize.Five))    //DEBUG LIST
     }
 
     def cell(rowIdx: Int, colIdx: Int, value: Option[Char] = None): Option[Char] = {
@@ -151,8 +151,9 @@ case class GameBoard(size: Int) {
     def isGameOver(): Boolean = ships.isEmpty
 
 
-    def attack(position: (Int, Int)): Boolean = {
-        val (rowIdx, colIdx) = position
+    def attack(position: Position): Boolean = {
+        val rowIdx = position.getX()
+        val colIdx = position.getY()
         val targetChar = cell(rowIdx, colIdx)
 
         targetChar match {
@@ -160,6 +161,8 @@ case class GameBoard(size: Int) {
                 cell(rowIdx, colIdx, Some('X')) // Treffer markieren
                 ships = ships.filterNot { case (r, c) => r == rowIdx && c == colIdx }
                 true // Treffer
+            case Some('X') => true
+            case Some('*') => false
             case _ =>
                 cell(rowIdx, colIdx, Some('*')) // Fehlschlag markieren
                 false // Fehlschlag
