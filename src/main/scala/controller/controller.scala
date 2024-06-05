@@ -1,9 +1,11 @@
 package controller
 
-import util.Observable
+import util.{Observable, GameState, GameMemento}
 import model.{GameBoard,Ship, Position}
 
 class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends Observable{
+
+    private var state: GameState = _
 
     def startGame(): Unit = {
 
@@ -73,6 +75,22 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
     
         if (player == 1) gameBoard2.printField(hidden = true) else gameBoard1.printField(hidden = true)
     
+    }
+
+    def setState(state: GameState): Unit = {
+        this.state = state
+    }
+
+    def getState: GameState = {
+        state
+    }
+
+    def createMemento(): GameMemento = {
+        new GameMemento(state)
+    }
+
+    def restoreMemento(memento: GameMemento): Unit = {
+        state = memento.getState
     }
 
 }

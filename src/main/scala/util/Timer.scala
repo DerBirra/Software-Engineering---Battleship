@@ -1,4 +1,4 @@
-package model
+package util
 
 import scala.concurrent._
 import scala.concurrent.duration._

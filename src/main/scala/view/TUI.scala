@@ -1,8 +1,8 @@
 package view
 
-import model.{GameBoard, Player, Position, TimerAddon}
+import model.{GameBoard, Player, Position}
 import controller.Controller
-import util.Observer
+import util.{Observer,TimerAddon}
 import scala.io.StdIn
 import java.io.IOException
 import util.Observable
@@ -17,6 +17,7 @@ class TUI(controller: Controller, var player: Int) extends Observer {
         input match {
 
             case "start" => gameLoop()
+            case "load" => loadGame()
             case "exit" => sys.exit(0)
             case _ => sys.exit(1)
         
@@ -69,6 +70,12 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
         println(s"Spieler $currentPlayer hat gewonnen! Das Spiel ging $getGameTime Sekunden")
         sys.exit(0)
+
+    }
+
+    def loadGame(): Unit = {
+
+        
 
     }
 
