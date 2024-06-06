@@ -4,6 +4,7 @@ import model.{Ship,ShipType,Position}
 import util.Observable
 
 import scala.collection.mutable.ListBuffer
+import scala.util.Try
 
 case class GameBoard(size: Int) {
 
@@ -65,47 +66,43 @@ case class GameBoard(size: Int) {
         horizontalCoords + top + fieldContent + bottom
     }
 
-    def placeShip(ship: Ship, position: (Int, Int), orientation: Char): Boolean = {
-    val (shipRow, shipCol) = position
+     def placeShip(ship: Ship, position: (Int, Int), orientation: Char): Try[Unit] = {
+        Try {
+            val (shipRow, shipCol) = position
 
-    val valShipSize = ship.size match {
-        case ShipSize.Two => 2
-        case ShipSize.Three => 3
-        case ShipSize.Four => 4
-        case ShipSize.Five => 5
-    }
+            val valShipSize = ship.size match {
+                case ShipSize.Two => 2
+                case ShipSize.Three => 3
+                case ShipSize.Four => 4
+                case ShipSize.Five => 5
+            }
 
-    var shipPlaced = false
-    while (!shipPlaced) {
-        val inBounds =
-            if (orientation == 'h') shipCol + valShipSize - 1 <= size
-            else shipRow + valShipSize - 1 <= size
+            val inBounds =
+                if (orientation == 'h') shipCol + valShipSize - 1 <= size
+                else shipRow + valShipSize - 1 <= size
 
-        val cellsOccupied =
-            if (orientation == 'h') (0 until valShipSize).forall(i => isCellContent(shipRow, shipCol + i, ' '))
-            else (0 until valShipSize).forall(i => isCellContent(shipRow + i, shipCol, ' '))
+            val cellsOccupied =
+                if (orientation == 'h') (0 until valShipSize).forall(i => isCellContent(shipRow, shipCol + i, ' '))
+                else (0 until valShipSize).forall(i => isCellContent(shipRow + i, shipCol, ' '))
 
-        if (inBounds && cellsOccupied) {
-            // Platzieren des Schiffs
-            if (orientation == 'h') {
-                for (i <- 0 until valShipSize) {
-                    cell(shipRow, shipCol + i, Some('O'))
-                    ships = ships :+ (shipRow, shipCol + i)
+            if (inBounds && cellsOccupied) {
+                // Platzieren des Schiffs
+                if (orientation == 'h') {
+                    for (i <- 0 until valShipSize) {
+                        cell(shipRow, shipCol + i, Some('O'))
+                        ships = ships :+ (shipRow, shipCol + i)
+                    }
+                } else {
+                    for (i <- 0 until valShipSize) {
+                        cell(shipRow + i, shipCol, Some('O'))
+                        ships = ships :+ (shipRow + i, shipCol)
+                    }
                 }
             } else {
-                for (i <- 0 until valShipSize) {
-                    cell(shipRow + i, shipCol, Some('O'))
-                    ships = ships :+ (shipRow + i, shipCol)
-                }
+                throw new IllegalArgumentException("Das Schiff kann nicht an dieser Position platziert werden.")
             }
-            shipPlaced = true
-        } else {
-            println("Das Schiff kann nicht an dieser Position platziert werden. Versuche es erneut.")
-            return false
         }
     }
-    true
-}
 
 
     def getShipsToPlace(): List[Ship] = {

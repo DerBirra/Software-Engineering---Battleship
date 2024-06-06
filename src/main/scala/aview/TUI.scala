@@ -5,6 +5,7 @@ import controller.Controller
 import util.Observer
 import scala.io.StdIn
 import util.Observable
+import scala.util.{Try, Success, Failure}
 
 class TUI(controller: Controller, player: Int) extends Observer {
 
@@ -69,29 +70,24 @@ class TUI(controller: Controller, player: Int) extends Observer {
 
     def placeShips(player: Int): Unit = {
 
-            println(s"Spieler $player: Platziere deine Schiffe")
+        println(s"Spieler $player: Platziere deine Schiffe")
 
-            val shipList = controller.getShipsToPlace(player)
-            var index = 0
+        val shipList = controller.getShipsToPlace(player)
+        var index = 0
 
-            while (index < shipList.length) {
+        while (index < shipList.length) {
 
-                val position = readCoordinates()
-                val orientation = readOrientation()
+            val position = readCoordinates()
+            val orientation = readOrientation()
 
-                if (!(controller.placeShip(player, shipList(index), position, orientation))) {
-
-                    controller.placeShip(player, shipList(index), position, orientation)
-                    
-                } else {
-                    
-                    controller.placeShip(player, shipList(index), position, orientation)
-                    index +=1;
-
-                }
-            
+            controller.placeShip(player, shipList(index), position, orientation) match {
+                case Success(_) =>
+                    println(s"Schiff ${shipList(index).stype} erfolgreich platziert.")
+                    index += 1
+                case Failure(exception) =>
+                    println(s"Fehler beim Platzieren des Schiffs: ${exception.getMessage}. Versuche es erneut.")
             }
-
+        }
     }
 
     def readCoordinates(): (Int, Int) = {

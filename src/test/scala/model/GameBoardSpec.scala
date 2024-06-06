@@ -2,6 +2,7 @@ package model
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
+import scala.util.Success
 
 class GameBoardSpec extends AnyWordSpec {
   val ship1 = Ship(ShipType.Carrier, ShipSize.Five)
@@ -31,11 +32,11 @@ class GameBoardSpec extends AnyWordSpec {
     "place ships" in {
       val gameBoard = GameBoard(9)
       gameBoard.generateField()
-      gameBoard.placeShip(ship1, (1, 1), 'h') shouldEqual true
-      gameBoard.placeShip(ship2, (9, 9), 'h') shouldEqual false
-      gameBoard.placeShip(ship3, (1, 2), 'h') shouldEqual false
-      gameBoard.placeShip(ship4, (2, 2), 'h') shouldEqual true
-      gameBoard.placeShip(ship5, (1, 2), 'h') shouldEqual false
+      gameBoard.placeShip(ship1, (1, 1), 'h').isSuccess shouldEqual true
+      gameBoard.placeShip(ship2, (9, 9), 'h').isSuccess  shouldEqual false
+      gameBoard.placeShip(ship3, (1, 2), 'h').isSuccess  shouldEqual false
+      gameBoard.placeShip(ship4, (2, 2), 'h').isSuccess  shouldEqual true
+      gameBoard.placeShip(ship5, (1, 2), 'h').isSuccess  shouldEqual false
     }
 
     "attack ships" in {
@@ -47,11 +48,11 @@ class GameBoardSpec extends AnyWordSpec {
       gameBoard.placeShip(ship4, (4, 4), 'h')
       gameBoard.placeShip(ship5, (5, 5), 'h')
       gameBoard.attack((1, 1)) shouldEqual true
-      gameBoard.attack((1, 1)) shouldEqual false
+      gameBoard.attack((1, 1)) shouldEqual true
       gameBoard.attack((1, 6)) shouldEqual false
       gameBoard.attack((2, 2)) shouldEqual true
       gameBoard.attack((3, 3)) shouldEqual true
-      gameBoard.attack((3, 3)) shouldEqual false
+      gameBoard.attack((3, 3)) shouldEqual true
       gameBoard.attack((4, 4)) shouldEqual true
       gameBoard.attack((5, 5)) shouldEqual true
     }
@@ -108,7 +109,7 @@ class GameBoardSpec extends AnyWordSpec {
         val gameBoard = GameBoard(9)
         gameBoard.generateField()
         val ship = Ship(ShipType.Carrier, ShipSize.Five)
-        gameBoard.placeShip(ship, (1, 1), 'h') shouldEqual true
+        gameBoard.placeShip(ship, (1, 1), 'h').isSuccess  shouldEqual true
       }
     }
 
@@ -117,7 +118,7 @@ class GameBoardSpec extends AnyWordSpec {
         val gameBoard = GameBoard(9)
         gameBoard.generateField()
         val ship = Ship(ShipType.Carrier, ShipSize.Five)
-        gameBoard.placeShip(ship, (1, 1), 'v') shouldEqual true
+        gameBoard.placeShip(ship, (1, 1), 'v').isSuccess  shouldEqual true
       }
     }
     "GameBoard getSize method" should {

@@ -2,13 +2,14 @@ package controller
 
 import util.Observable
 import model.{GameBoard,Ship, Position, PlaceShipStategyTemplate}
+import scala.util.Try
 
 class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends Observable{
     
-    private var placeShipStrategy: PlaceShipStategyTemplate = null
+    private var placeShipStrategy: Option[PlaceShipStategyTemplate] = None
 
     def setPlaceShipStrategy(strategy: PlaceShipStategyTemplate): Unit = {
-        placeShipStrategy = strategy
+        placeShipStrategy = Some(strategy)
     }
 
     def startGame(player: Int): Unit = {
@@ -22,18 +23,18 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
     }
 
     def startGameWithStrategy(player: Int): Unit = {
-        if (placeShipStrategy != null) {
+       (placeShipStrategy) match  {
+            case Some(strat) => 
             if(player == 1){
-               gameBoard1 = placeShipStrategy.createNewGameField(gameBoard1.getSize()) 
+               gameBoard1 = strat.createNewGameField(gameBoard1.getSize()) 
             }
             if (player == 2){
-                gameBoard2 = placeShipStrategy.createNewGameField(gameBoard2.getSize())
+                gameBoard2 =strat.createNewGameField(gameBoard2.getSize())
             }
             
             notifyObservers
-        } else {
-            startGame(player)
-        }
+        case None => startGame(player)
+        } 
     }
 
     def isGameOver(): Boolean = gameBoard1.isGameOver() || gameBoard2.isGameOver()
@@ -56,17 +57,11 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
 
     }
 
-    def placeShip(player: Int, ship: Ship, position: (Int, Int), orientation: Char): Boolean = {
-
-        var state = false
-
-        if (player == 1) state = gameBoard1.placeShip(ship,position,orientation)
-        else state = gameBoard2.placeShip(ship,position,orientation)
+    def placeShip(player: Int, ship: Ship, position: (Int, Int), orientation: Char): Try[Unit] = {
+        val result = if (player == 1) gameBoard1.placeShip(ship, position, orientation)
+                     else gameBoard2.placeShip(ship, position, orientation)
         notifyObservers
-        return state
-        
-
-
+        result
     }
 
     def makeMove(player: Int, position: Position): Boolean = {

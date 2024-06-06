@@ -41,8 +41,8 @@ class ControllerSpec extends AnyWordSpec {
         val ship = Ship(ShipType.Carrier, ShipSize.Five)
         val position = (1, 1)
         val orientation = 'h'
-        controller.placeShip(1, ship, position, orientation) shouldEqual true
-        controller.placeShip(2, ship, position, orientation) shouldEqual true
+        controller.placeShip(1, ship, position, orientation).isSuccess shouldEqual true
+        controller.placeShip(2, ship, position, orientation).isSuccess shouldEqual true
         // Check if ship is correctly placed on the board
         // This might require mocking or stubbing the GameBoard methods
         }
