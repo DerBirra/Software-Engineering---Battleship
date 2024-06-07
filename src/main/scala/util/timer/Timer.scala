@@ -1,4 +1,4 @@
-package util
+package util.timer
 
 import scala.concurrent._
 import scala.concurrent.duration._

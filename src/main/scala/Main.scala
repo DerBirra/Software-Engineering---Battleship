@@ -21,15 +21,13 @@ object Main {
 
     controller.add(tui1)
 
-    println(s"$GREEN" +"Geben sie 'start', 'load', 'save' oder 'exit' ein.")
+    println(s"$GREEN" +"Geben sie 'start' oder 'exit' ein." + s"$RESET")
 
     var input: String = ""
     input = readLine()
 
-    while (input != null) {
+    tui1.processInput(input)
 
-      tui1.processInput(input)
-
-    }
+    
   }
 }

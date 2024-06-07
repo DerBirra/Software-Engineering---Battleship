@@ -2,10 +2,13 @@ package view
 
 import model.{GameBoard, Player, Position}
 import controller.Controller
-import util.{Observer,TimerAddon}
+import util.timer.TimerAddon
+import util.observer.{Observer, Observable}
 import scala.io.StdIn
 import java.io.IOException
-import util.Observable
+import scala.io.AnsiColor.*
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class TUI(controller: Controller, var player: Int) extends Observer {
 
@@ -17,7 +20,6 @@ class TUI(controller: Controller, var player: Int) extends Observer {
         input match {
 
             case "start" => gameLoop()
-            case "load" => loadGame()
             case "exit" => sys.exit(0)
             case _ => sys.exit(1)
         
@@ -27,10 +29,10 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
     def gameLoop(): Unit = {
 
-        println("Spieler 1 geben Sie ihren Namen an: ")
+        println(s"$GREEN"+ "Spieler 1 geben Sie ihren Namen an: "+ s"$RESET")
         player1name = Player(scala.io.StdIn.readLine()).toString
 
-        println("Spieler 2 geben Sie ihren Namen an: ")
+        println(s"$GREEN"+ "Spieler 2 geben Sie ihren Namen an: "+ s"$RESET")
         player2name = Player(scala.io.StdIn.readLine()).toString
 
         controller.startGame()
@@ -42,41 +44,61 @@ class TUI(controller: Controller, var player: Int) extends Observer {
         tm.start()
 
         var currentPlayer = player
+        var gameEnded = false
 
-        while(!isGameOver()) {
+        while(!isGameOver() && !gameEnded) {
 
-            if (controller.makeMove(currentPlayer, attackOnce(currentPlayer))) {
+            println("Geben Sie 'save', 'load', 'exit' oder ENTER ein. (save = Spielstand Speichern, load = letzten Spielstand laden, exit = Beenden, ENTER = nächste Runde")
+            val input = scala.io.StdIn.readLine()
 
-                println("Getroffen.")
-
-            } else {
-
-                println("Nicht getroffen")
-
+            input.toLowerCase match {
+                case "save" => saveGame()
+                case "load" => loadGame()
+                case "exit" => gameEnded = true
+                case _ => 
             }
 
+            if (controller.makeMove(currentPlayer, attackOnce(currentPlayer))) {
+                println(s"$GREEN"+ "Getroffen."+ s"$RESET")
+            } else {
+                println(s"$RED"+"Nicht getroffen"+ s"$RESET")
+            }
             currentPlayer = if (currentPlayer == 1) 2 else 1
+            controller.setCurrentPlayer(currentPlayer)
             player = currentPlayer
-            //println(currentPlayer)
-
             Thread.sleep(1000)
 
         }
 
-        
-
-        val getGameTime = tm.getElapsedTime
-        tm.stop()
-
-        println(s"Spieler $currentPlayer hat gewonnen! Das Spiel ging $getGameTime Sekunden")
-        sys.exit(0)
+        if (!gameEnded) {
+            clearScreen()
+            val getGameTime = tm.getElapsedTime
+            tm.stop()
+            println(s"$GREEN"+ s"Spieler $currentPlayer hat gewonnen! Das Spiel ging $getGameTime Sekunden" + s"$RESET")
+            sys.exit(0)
+        }      
 
     }
 
     def loadGame(): Unit = {
 
-        
+        try {
+            controller.restoreState()
+            println("Spiel geladen.")
+        } catch {
+            case e: Exception => e.printStackTrace()
+        }
 
+    }
+
+    def saveGame(): Unit = {
+
+        try {
+            controller.saveState()
+            println("Spiel gespeichert.")
+        } catch {
+            case e: Exception => e.printStackTrace()
+        }
     }
 
     def isGameOver(): Boolean = {
@@ -89,12 +111,12 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
         if (player == 1) {
 
-            println(s"Spieler $player1name: Platziere deine Schiffe")
+            println(s"$GREEN" + s"Spieler $player1name: Platziere deine Schiffe"+ s"$RESET")
 
 
         } else {
 
-            println(s"Spieler $player2name: Platziere deine Schiffe")
+            println(s"$GREEN" + s"Spieler $player2name: Platziere deine Schiffe"+ s"$RESET")
 
 
         }
@@ -133,13 +155,13 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
     def readCoordinate(coordType: String): Int = {
 
-        println(s"Bitte geben Sie die $coordType an:")
+        println(s"$GREEN" + s"Bitte geben Sie die $coordType an:"+ s"$RESET")
         var input = scala.io.StdIn.readLine()
         var coordinate = input.toIntOption
 
         while (coordinate.isEmpty || coordinate.get < 0 || coordinate.get >= controller.getGameBoardSize()+1) {
 
-            println(s"Ungültige Eingabe für die $coordType. Bitte geben Sie eine Zahl zwischen 1 und ${controller.getGameBoardSize()-1} ein.")
+            println(s"$RED" + s"Ungültige Eingabe für die $coordType. Bitte geben Sie eine Zahl zwischen 1 und ${controller.getGameBoardSize()-1} ein."+ s"$RESET")
             input = scala.io.StdIn.readLine()
             coordinate = input.toIntOption
         }
@@ -150,12 +172,12 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
     def readOrientation(): Char = {
         
-        println("Bitte geben Sie die Ausrichtung des Schiffs an (h für horizontal, v für vertikal):")
+        println(s"$GREEN" +"Bitte geben Sie die Ausrichtung des Schiffs an (h für horizontal, v für vertikal):"+ s"$RESET")
         var input = scala.io.StdIn.readLine().toLowerCase
 
         while(input != "h" && input != "v") {
 
-            println("Ungültige Eingabe für die Ausrichtung. Bitte geben Sie 'h' für horizontal oder 'v' für vertikal ein.")
+            println(s"$RED" +"Ungültige Eingabe für die Ausrichtung. Bitte geben Sie 'h' für horizontal oder 'v' für vertikal ein."+ s"$RESET")
             input = scala.io.StdIn.readLine().toLowerCase
 
         }
@@ -176,7 +198,7 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
         while(isCell) {
 
-            println("Bitte eine noch nicht verwendete Koordinate nehmen.")
+            println(s"$RED" +"Bitte eine noch nicht verwendete Koordinate nehmen." + s"$RESET")
 
             coordinates = getAttackedCoordinates()
             row = coordinates._1
@@ -203,7 +225,7 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
             while(row < 0 || row > controller.getGameBoardSize()+1){
 
-                println("Ungültige Eingabe für die Zeile.")
+                println(s"$RED" +"Ungültige Eingabe für die Zeile."+ s"$RESET")
                 row = getPosition("Zeile")
 
             }
@@ -214,7 +236,7 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
         while(col < 0 || col > controller.getGameBoardSize()+1){
 
-            println("Ungültige Eingabe für die Spalte.")
+            println(s"$RED" +"Ungültige Eingabe für die Spalte."+ s"$RESET")
             col = getPosition("Spalte")
 
         }
@@ -227,11 +249,11 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
         if (player == 1) {
             
-            println(s"$player1name bitte gib die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):")
+            println(s"$GREEN" + s"$player1name bitte gib die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):"+ s"$RESET")
 
         } else {
 
-            println(s"$player2name bitte gib die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):")
+            println(s"$GREEN" + s"$player2name bitte gib die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):"+ s"$RESET")
 
         } 
 
@@ -239,34 +261,29 @@ class TUI(controller: Controller, var player: Int) extends Observer {
 
         input.toLowerCase match {
 
-        case "exit" => sys.exit(0)
+            case "exit" => sys.exit(0)
+            case _ => input.toIntOption.getOrElse(getPosition(linie))
 
-            case _ => input.toIntOption match {
-
-            case Some(value) => value
-            case None => getPosition(linie)
-
-            }
         }
-
-        
 
     }
 
     def displayBoards(): Unit = {
-        println(s"Spieler $player1name: Dein eigenes Spielbrett")
+        println(s"$UNDERLINED" + s"Spieler $player1name: Dein eigenes Spielbrett" + s"$RESET")
         println(controller.getPlayerBoard(1, hidden = false))
-        println(s"Spieler $player1name: Das gegnerische Spielbrett")
+        println(s"$UNDERLINED" + s"Spieler $player1name: Das gegnerische Spielbrett" + s"$RESET")
         println(controller.getOpponentBoard(1))
-        println(s"Spieler $player2name: Dein eigenes Spielbrett")
+        println(s"$UNDERLINED" + s"Spieler $player2name: Dein eigenes Spielbrett" + s"$RESET")
         println(controller.getPlayerBoard(2, hidden = false))
-        println(s"Spieler $player2name: Das gegnerische Spielbrett")
+        println(s"$UNDERLINED" + s"Spieler $player2name: Das gegnerische Spielbrett" + s"$RESET")
         println(controller.getOpponentBoard(2))
+    }
+
+    private def clearScreen(): Unit = {
+        print("\u001b[H\u001b[2J")
     }
     
 
     override def update: Unit = displayBoards()
-
-
 
 }

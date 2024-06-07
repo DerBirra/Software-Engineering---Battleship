@@ -1,54 +1,65 @@
 package controller
 
-import util.{Observable, GameState, GameMemento}
+import util.memento.{GameState,GameMemento,Caretaker}
+import util.observer.Observable
+import util.command.Command
+import util.command.{PlaceShipCommand,AttackCommand}
 import model.{GameBoard,Ship, Position}
 
 class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends Observable{
 
+    private var caretaker: Caretaker = new Caretaker()
+    private var currentPlayer: Int = 1
     private var state: GameState = _
 
     def startGame(): Unit = {
 
-        gameBoard1.generateField()
-        gameBoard2.generateField()
+        state = GameState(gameBoard1, gameBoard2, currentPlayer)
+
+        state.gameBoard1.generateField()
+        state.gameBoard2.generateField()
         notifyObservers
 
     }
 
     def isGameOver(): Boolean = {
 
-        return gameBoard1.isGameOver() || gameBoard2.isGameOver()
+        return state.gameBoard1.isGameOver() || state.gameBoard2.isGameOver()
 
     }
 
     def getShipsToPlace(player: Int): List[Ship] = {
 
-        if (player == 1) gameBoard1.getShipsToPlace()
-        else gameBoard2.getShipsToPlace()
+        if (player == 1) state.gameBoard1.getShipsToPlace()
+        else state.gameBoard2.getShipsToPlace()
 
     }
 
     def isCellContent(player: Int, row: Int, col: Int, or: Char): Boolean = {
 
-        if (player == 1) gameBoard1.isCellContent(row,col,or)
-        else gameBoard2.isCellContent(row,col,or)
+        if (player == 1) state.gameBoard1.isCellContent(row,col,or)
+        else state.gameBoard2.isCellContent(row,col,or)
 
     }
 
     def getGameBoardSize(): Int = {
 
-        return gameBoard1.getSize()
+        return state.gameBoard1.getSize()
 
     }
 
     def placeShip(player: Int, ship: Ship, position: (Int, Int), orientation: Char): Boolean = {
 
-        var state = false
+        var stateBoolean = false
+        val command = new PlaceShipCommand
+        
 
-        if (player == 1) state = gameBoard1.placeShip(ship,position,orientation)
-        else state = gameBoard2.placeShip(ship,position,orientation)
+        if (player == 1) stateBoolean = state.gameBoard1.placeShip(ship,position,orientation)
+        else stateBoolean = state.gameBoard2.placeShip(ship,position,orientation)
+
+        executeCommand(command)
         notifyObservers
-        return state
+        stateBoolean
         
 
 
@@ -58,8 +69,11 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
 
         val x = position.getX()
         val y = position.getY()
+        val command = new AttackCommand
 
-        val hit = if (player == 1) gameBoard2.attack(new Position(position.getX(),position.getY())) else gameBoard1.attack(new Position(position.getX(),position.getY()))
+        val hit = if (player == 1) state.gameBoard2.attack(new Position(position.getX(),position.getY())) else state.gameBoard1.attack(new Position(position.getX(),position.getY()))
+        
+        executeCommand(command)
         notifyObservers
         hit
 
@@ -67,30 +81,41 @@ class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends O
 
     def getPlayerBoard(player: Int, hidden: Boolean = true): String = {
     
-        if (player == 1) gameBoard1.printField(hidden) else gameBoard2.printField(hidden)
+        if (player == 1) state.gameBoard1.printField(hidden) else state.gameBoard2.printField(hidden)
     
     }
 
     def getOpponentBoard(player: Int): String = {
     
-        if (player == 1) gameBoard2.printField(hidden = true) else gameBoard1.printField(hidden = true)
+        if (player == 1) state.gameBoard2.printField(hidden = true) else state.gameBoard1.printField(hidden = true)
     
     }
 
-    def setState(state: GameState): Unit = {
-        this.state = state
+    def executeCommand(command: Command): Unit = {
+
+        command.execute(this)
+
     }
 
-    def getState: GameState = {
-        state
+    def saveState(): Unit = {
+
+        caretaker.addMemento(GameMemento(state))
+
     }
 
-    def createMemento(): GameMemento = {
-        new GameMemento(state)
+    def restoreState(): Unit = {
+
+        caretaker.getMemento.foreach(memento => state = memento.getState)
+        notifyObservers
+    
     }
 
-    def restoreMemento(memento: GameMemento): Unit = {
-        state = memento.getState
+    def setCurrentPlayer(player: Int): Unit = {
+        this.currentPlayer = player
+    }
+
+    def getCurrentPlayer: Int = {
+        currentPlayer
     }
 
 }

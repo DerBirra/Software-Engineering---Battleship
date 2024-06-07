@@ -1,7 +1,7 @@
 package model
 
 import model.{Ship,ShipType,Position}
-import util.Observable
+import util.observer.Observable
 
 import scala.io.StdIn.readLine
 import scala.collection.mutable.ListBuffer
