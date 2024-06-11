@@ -46,17 +46,27 @@ class TUI(controller: Controller, player: Int) extends Observer {
     def gameLoop(): Unit = {
 
         var currentPlayer = 1
+        var gameEnded = false
 
-        while(!isGameOver()) {
+        while(!isGameOver() && !gameEnded) {
 
-            controller.makeMove(currentPlayer, attackOnce(currentPlayer))
+            println("Geben Sie 'save', 'load', 'exit' oder ENTER ein. (save = Spielstand Speichern, load = letzten Spielstand laden, exit = Beenden, ENTER = nächste Runde")
+            val input = scala.io.StdIn.readLine()
 
-            currentPlayer = if (currentPlayer == 1) 2 else 1
-
-            Thread.sleep(1000)
-
+            input.toLowerCase match {
+                case "save" => saveGame()
+                case "load" => loadGame()
+                case "exit" => gameEnded = true
+                case _ => // proceed to next round
+            }
+            
+            if (!gameEnded) {
+                controller.makeMove(currentPlayer, attackOnce(currentPlayer))
+                currentPlayer = if (currentPlayer == 1) 2 else 1
+                Thread.sleep(1000)
+            }
         }
-
+        
         println(s"Spieler $currentPlayer hat gewonnen!")
         sys.exit(0)
 
@@ -175,7 +185,7 @@ class TUI(controller: Controller, player: Int) extends Observer {
 
     def getPosition(linie: String, player :Int): Int = {
 
-        println(s" Spieler $player Bitte geben Sie die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):")
+        println(s"Spieler $player Bitte geben Sie die $linie an, in der Sie einen Schuss abgeben möchten (oder 'exit' zum Beenden):")
 
         val input = scala.io.StdIn.readLine()
 
@@ -198,7 +208,24 @@ class TUI(controller: Controller, player: Int) extends Observer {
         println(s"Spieler $player: Das gegnerische Spielbrett")
         println(controller.getOpponentBoard(player))
     }
+
+      def saveGame(): Unit = {
+        try {
+            controller.saveState()
+            println("Spiel gespeichert.")
+        } catch {
+            case e: Exception => println(s"Fehler beim Speichern des Spiels: ${e.getMessage}")
+        }
+    }
     
+     def loadGame(): Unit = {
+        try {
+            controller.restoreState()
+            println("Spiel geladen.")
+        } catch {
+            case e: Exception => println(s"Fehler beim Laden des Spiels: ${e.getMessage}")
+        }
+    }
 
     override def update: Unit = displayBoards()
 }
