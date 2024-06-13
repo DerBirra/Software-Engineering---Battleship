@@ -6,6 +6,7 @@ trait Observer {
   
 }
 
+
 class Observable {
 
     var subscribers: Vector[Observer] = Vector()

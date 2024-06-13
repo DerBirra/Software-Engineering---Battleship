@@ -6,7 +6,7 @@ import util.command.Command
 import util.command.{PlaceShipCommand,AttackCommand}
 import model.{GameBoard,Ship, Position}
 
-class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends Observable{
+class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends Observable {
 
     private var caretaker: Caretaker = new Caretaker()
     private var currentPlayer: Int = 1

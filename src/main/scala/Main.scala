@@ -3,6 +3,7 @@ package main.scala
 import model.{GameBoard, Player, ShipType}
 import controller.Controller
 import view.TUI
+import view.swing.GUI
 import scala.io.StdIn.*
 import scala.io.AnsiColor.*
 
@@ -18,8 +19,14 @@ object Main {
     val gameBoard2 = new GameBoard(size)
     val controller = new Controller(gameBoard1, gameBoard2)
     val tui1 = new TUI(controller,1)
+    val gui = new GUI(controller)
 
     controller.add(tui1)
+    controller.add(gui)
+
+    gui.initialize()
+    
+    
 
     println(s"$GREEN" +"Geben sie 'start' oder 'exit' ein." + s"$RESET")
 
