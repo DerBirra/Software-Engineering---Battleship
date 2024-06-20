@@ -6,8 +6,10 @@ import util.command.Command
 import model.{GameBoard,Ship, Position, PlaceShipStategyTemplate}
 import util.command.{PlaceShipCommand, AttackCommand}
 import scala.util.{Try, Success, Failure}
+import model.modelComponent.GameBoardInterface
+import controller.controllerComponent.controllerIf
 
-class Controller(var gameBoard1: GameBoard, var gameBoard2: GameBoard) extends Observable{
+class Controller(var gameBoard1: GameBoardInterface, var gameBoard2: GameBoardInterface) extends controllerIf{
     
     private var caretaker: Caretaker = new Caretaker()
     private var currentPlayer: Int = 1

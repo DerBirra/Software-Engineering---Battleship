@@ -1,8 +1,10 @@
 package model
 
+import model.modelComponent.GameBoardInterface
+
 class PlaceShipStrategy extends PlaceShipStategyTemplate {
 
-  override def placeShips(gameBoard: GameBoard): Unit = {
+  override def placeShips(gameBoard: GameBoardInterface): Unit = {
     
     val ships = gameBoard.getShipsToPlace()
 

@@ -5,8 +5,9 @@ import util.Observable
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Try
+import model.modelComponent.GameBoardInterface
 
-case class GameBoard(size: Int) {
+case class GameBoard(size: Int) extends GameBoardInterface{
 
     var field: Array[Array[Char]] = Array.ofDim[Char](size, size)
     private var ships: List[(Int, Int)] = List() // Liste der Schiffpositionen
