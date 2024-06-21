@@ -12,7 +12,7 @@ object Main {
  
   def main(args: Array[String]): Unit = {
 
-    //println(s"$GREEN" +"Geben sie die Feldgröße an")
+    println(s"$GREEN" +"Geben sie die Feldgröße an")
     var size = readInt()
 
     var gameBoard1 = new GameBoard(size)
@@ -48,8 +48,6 @@ object Main {
 
     val gui = new GUI(controller)
     controller.add(gui)
-
-    gui.initialize()
 
 
   }
