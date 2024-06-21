@@ -1,9 +1,9 @@
-package controller
+package controller.controllerComponent.controllerImpl
 
 import util.memento.{GameState, GameMemento, Caretaker}
 import util.Observable
 import util.command.Command
-import model.{GameBoard,Ship, Position, PlaceShipStategyTemplate}
+import model.modelComponent.modelImpl.{GameBoard,Ship, Position, PlaceShipStategyTemplate}
 import util.command.{PlaceShipCommand, AttackCommand}
 import scala.util.{Try, Success, Failure}
 import model.modelComponent.GameBoardInterface

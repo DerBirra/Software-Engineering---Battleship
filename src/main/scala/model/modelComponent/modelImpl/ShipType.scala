@@ -1,4 +1,4 @@
-package model
+package model.modelComponent.modelImpl
 
 enum ShipType:
 

@@ -1,4 +1,4 @@
-package model
+package model.modelComponent.modelImpl
 
 import model.modelComponent.GameBoardInterface
 

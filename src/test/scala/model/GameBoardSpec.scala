@@ -1,5 +1,6 @@
 package model
 
+import model.modelComponent.modelImpl.* // provisorisch
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import scala.util.Success

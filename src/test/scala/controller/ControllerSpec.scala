@@ -2,7 +2,8 @@ package controller
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
-import model.{GameBoard, Ship, ShipType, ShipSize, Position}
+import model.modelComponent.modelImpl.{GameBoard, Ship, ShipType, ShipSize, Position}
+import controller.controllerComponent.controllerImpl.Controller
 
 class ControllerSpec extends AnyWordSpec {
   val gameBoard1 = GameBoard(9)

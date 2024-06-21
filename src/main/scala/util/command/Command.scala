@@ -1,6 +1,6 @@
 package util.command
 
-import controller.Controller
+import controller.controllerComponent.controllerImpl.Controller
 
 trait Command {
   

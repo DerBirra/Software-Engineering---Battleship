@@ -1,4 +1,4 @@
-package model
+package model.modelComponent.modelImpl
 
 case class Position(x: Int, y: Int) {
     def getX(): Int = x

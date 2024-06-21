@@ -1,5 +1,6 @@
-import model.{GameBoard, Player, ShipType}
-import controller.Controller
+import model.modelComponent.modelImpl.{GameBoard, Player, ShipType}
+import controller.controllerComponent.controllerImpl.Controller
+import controller.controllerComponent.controllerIf
 import aview.TUI
 import scala.io.StdIn.*
 

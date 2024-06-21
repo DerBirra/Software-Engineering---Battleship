@@ -1,6 +1,6 @@
 package aview.swingGui
 
-import controller.Controller
+import controller.controllerComponent.controllerImpl.Controller
 import util.Observer
 import scala.swing._
 import scala.swing.event._

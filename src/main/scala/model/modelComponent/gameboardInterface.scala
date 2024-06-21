@@ -1,6 +1,6 @@
 package model.modelComponent
 
-import model.Ship
+import model.modelComponent.modelImpl.Ship
 import scala.util.Try
 
 trait GameBoardInterface {

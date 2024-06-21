@@ -3,7 +3,7 @@ package controller.controllerComponent
 import util.memento.{GameState, GameMemento, Caretaker}
 import util.Observable
 import util.command.Command
-import model.{GameBoard, Ship, Position, PlaceShipStategyTemplate}
+import model.modelComponent.modelImpl.{GameBoard, Ship, Position, PlaceShipStategyTemplate}
 import scala.util.{Try, Success, Failure}
 
 trait controllerIf extends Observable {

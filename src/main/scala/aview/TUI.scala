@@ -1,7 +1,7 @@
 package aview
 
-import model.{GameBoard, Player, Position, PlaceShipStrategy}
-import controller.Controller
+import model.modelComponent.modelImpl.{GameBoard, Player, Position, PlaceShipStrategy}
+import controller.controllerComponent.controllerImpl.Controller
 import util.Observer
 import scala.io.StdIn
 import util.Observable

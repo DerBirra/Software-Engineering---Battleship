@@ -1,6 +1,6 @@
-package model
+package model.modelComponent.modelImpl
 
-import model.{Ship,ShipType,Position}
+import model.modelComponent.modelImpl.{Ship,ShipType,Position}
 import util.Observable
 
 import scala.collection.mutable.ListBuffer
