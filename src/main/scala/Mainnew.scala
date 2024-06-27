@@ -3,17 +3,20 @@ import controller.controllerComponent.controllerImpl.Controller
 import controller.controllerComponent.controllerIf
 import aview.TUI
 import scala.io.StdIn.*
+// import Shipmodule.given
+import com.google.inject.Injector
+import com.google.inject.Guice
 
 object Main {
  
   def main(args: Array[String]): Unit = {
+    val injector: Injector = Guice.createInjector(new Shipmodule)
 
     println("Geben sie die Feldgröße an")
     var size = readInt()
 
-    val gameBoard1 = new GameBoard(size)
-    val gameBoard2 = new GameBoard(size)
-    val controller = new Controller(gameBoard1, gameBoard2)
+    val controller = injector.getInstance(classOf[controllerIf])
+    // val controller = summon[controllerIf]
     val tui1 = new TUI(controller,1)
     val tui2 = new TUI(controller,2)
 

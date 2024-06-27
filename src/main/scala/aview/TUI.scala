@@ -6,8 +6,9 @@ import util.Observer
 import scala.io.StdIn
 import util.Observable
 import scala.util.{Try, Success, Failure}
+import controller.controllerComponent.controllerIf
 
-class TUI(controller: Controller, player: Int) extends Observer {
+class TUI(controller: controllerIf, player: Int) extends Observer {
 
     def processInput(input: String): Unit = {
     controller.startGame(player)

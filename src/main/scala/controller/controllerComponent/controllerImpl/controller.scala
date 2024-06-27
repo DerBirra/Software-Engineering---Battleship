@@ -8,8 +8,11 @@ import util.command.{PlaceShipCommand, AttackCommand}
 import scala.util.{Try, Success, Failure}
 import model.modelComponent.GameBoardInterface
 import controller.controllerComponent.controllerIf
+import com.google.inject.Inject
 
-class Controller(var gameBoard1: GameBoardInterface, var gameBoard2: GameBoardInterface) extends controllerIf{
+class Controller @Inject()
+    (var gameBoard1: GameBoardInterface, var gameBoard2: GameBoardInterface) 
+    extends controllerIf{
     
     private var caretaker: Caretaker = new Caretaker()
     private var currentPlayer: Int = 1
