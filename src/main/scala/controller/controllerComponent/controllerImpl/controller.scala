@@ -9,9 +9,10 @@ import scala.util.{Try, Success, Failure}
 import model.modelComponent.GameBoardInterface
 import controller.controllerComponent.controllerIf
 import com.google.inject.Inject
+import com.google.inject.name.Named
 
 class Controller @Inject()
-    (var gameBoard1: GameBoardInterface, var gameBoard2: GameBoardInterface) 
+    (var gameBoard1: GameBoardInterface, var gameBoard2: GameBoardInterface, @Named("xml") xmlFileIO: FileIO, @Named("json") jsonFileIO: FileIO) 
     extends controllerIf{
     
     private var caretaker: Caretaker = new Caretaker()
@@ -123,6 +124,20 @@ class Controller @Inject()
 
     def setCurrentPlayer(player: Int): Unit = {
         this.currentPlayer = player
+    }
+
+    def processXML(filePath: String): Unit = {
+        xmlFileIO.read(filePath) match {
+            case Right(data) => println(s"Read XML: $data")
+            case Left(e) => println(s"Error reading XML: $e")
+        }
+    }
+
+    def processJSON(filePath: String): Unit = {
+        jsonFileIO.read(filePath) match {
+            case Right(data) => println(s"Read JSON: $data")
+            case Left(e) => println(s"Error reading JSON: $e")
+        }
     }
 
     def getCurrentPlayer: Int = currentPlayer

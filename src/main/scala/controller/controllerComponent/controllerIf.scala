@@ -38,4 +38,8 @@ trait controllerIf extends Observable {
   def setCurrentPlayer(player: Int): Unit
 
   def getCurrentPlayer: Int
+
+  def processXML(filePath: String): Unit
+
+  def processJSON(filePath: String): Unit
 }

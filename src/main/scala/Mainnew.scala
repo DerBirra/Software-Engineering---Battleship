@@ -10,7 +10,7 @@ import com.google.inject.Guice
 object Main {
  
   def main(args: Array[String]): Unit = {
-    val injector: Injector = Guice.createInjector(new Shipmodule)
+    val injector: Injector = Guice.createInjector(new Shipmodule, new FileIOmodule)
 
     println("Geben sie die Feldgröße an")
     var size = readInt()
@@ -22,6 +22,9 @@ object Main {
 
     controller.add(tui1)
     controller.add(tui2)
+
+    controller.processJSON("src/files/jsondatei.json")
+    controller.processXML("src/files/xmldatei.xml")
 
     println("Geben sie 'start' ein um das spiel zu starten, oder 'exit' um es zu beenden.")
 
