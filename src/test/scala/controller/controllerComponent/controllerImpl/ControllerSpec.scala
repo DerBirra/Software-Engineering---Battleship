@@ -1,9 +1,9 @@
-package controller
+package controller.controllerComponent.controllerImpl
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
 import model.modelComponent.modelImpl.{GameBoard, Ship, ShipType, ShipSize, Position}
-import controller.controllerComponent.controllerImpl.Controller
+import model.modelComponent.modelImpl.PlaceShipStrategy
 
 class ControllerSpec extends AnyWordSpec {
   val gameBoard1 = GameBoard(9)
@@ -22,20 +22,18 @@ class ControllerSpec extends AnyWordSpec {
         val shipsToPlacePlayer2 = controller.getShipsToPlace(2)
         shipsToPlacePlayer1 should not be empty
         shipsToPlacePlayer2 should not be empty
-        // Ensure the returned list contains valid ships
-        // This might require mocking or stubbing the GameBoard methods
         }
 
         "check cell content" in {
         val cellContentPlayer1 = controller.isCellContent(1, 1, 1, 'h')
         val cellContentPlayer2 = controller.isCellContent(2, 1, 1, 'h')
-        cellContentPlayer1 shouldEqual false // Assuming the cell is empty initially
-        cellContentPlayer2 shouldEqual false // Assuming the cell is empty initially
+        cellContentPlayer1 shouldEqual false 
+        cellContentPlayer2 shouldEqual false 
         }
 
         "get game board size" in {
         val boardSize = controller.getGameBoardSize()
-        boardSize shouldEqual 9 // Assuming the board size is set to 9 in the constructor
+        boardSize shouldEqual 9
         }
 
         "place ship" in {
@@ -44,15 +42,13 @@ class ControllerSpec extends AnyWordSpec {
         val orientation = 'h'
         controller.placeShip(1, ship, position, orientation).isSuccess shouldEqual true
         controller.placeShip(2, ship, position, orientation).isSuccess shouldEqual true
-        // Check if ship is correctly placed on the board
-        // This might require mocking or stubbing the GameBoard methods
         }
 
         "make move" in {
         val position = Position(1, 1)
         val hit = controller.makeMove(1, position)
         val hit2 = controller.makeMove(2, position)
-        hit shouldEqual true // Assuming the move results in a hit
+        hit shouldEqual true 
         hit2 shouldEqual true
         }
 
@@ -61,7 +57,7 @@ class ControllerSpec extends AnyWordSpec {
         val player2Board = controller.getPlayerBoard(2)
         player1Board should not be empty
         player2Board should not be empty
-        // Check if the returned board strings are valid
+       
         }
 
         "get opponent board" in {
@@ -69,15 +65,16 @@ class ControllerSpec extends AnyWordSpec {
         val opponentBoardPlayer2 = controller.getOpponentBoard(2)
         opponentBoardPlayer1 should not be empty
         opponentBoardPlayer2 should not be empty
-        // Check if the returned board strings are valid
+       
         }
+
         "Controller isGameOver method" should {
             "return true if either game board is over" in {
                 val gameBoard1 = GameBoard(9)
                 val gameBoard2 = GameBoard(9)
                 val controller = new Controller(gameBoard1, gameBoard2)
         
-                // Assuming gameBoard1 is over
+                
                 gameBoard1.placeShip(Ship(ShipType.Carrier, ShipSize.Five), (1, 1), 'h')
                 gameBoard1.attack((1, 1))
                 gameBoard1.attack((1, 2))
@@ -98,9 +95,34 @@ class ControllerSpec extends AnyWordSpec {
                 
                 val hit = controller.makeMove(1, position)
                 
-                hit shouldEqual false // Assuming the move is a miss
+                hit shouldEqual false 
             }
         }
 
+        "start the game with a strategy" in {
+            val strategy = new PlaceShipStrategy
+            controller.setPlaceShipStrategy(strategy)
+            controller.startGameWithStrategy(1)
+            gameBoard1.printField() should not be empty
+            controller.startGameWithStrategy(2)
+            gameBoard2.printField() should not be empty
+        }
+        
+        "save and restore state" in {
+            controller.saveState()
+           
+            controller.placeShip(1, Ship(ShipType.Carrier, ShipSize.Five), (1, 1), 'h')
+            controller.restoreState()
+            
+            val boardStateAfterRestore = controller.getPlayerBoard(1, hidden = false)
+            boardStateAfterRestore should include ("O") 
+        }
+
+        "set and get current player" in {
+            controller.setCurrentPlayer(2)
+            controller.getCurrentPlayer shouldEqual 2
+            controller.setCurrentPlayer(1)
+            controller.getCurrentPlayer shouldEqual 1
+        }
     }
 }

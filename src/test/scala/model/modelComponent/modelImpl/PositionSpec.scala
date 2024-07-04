@@ -1,8 +1,7 @@
-package model
+package model.modelComponent.modelImpl
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers._
-import model.modelComponent.modelImpl.*
 
 class PositionSpec extends AnyWordSpec {
   "A Position" should {
