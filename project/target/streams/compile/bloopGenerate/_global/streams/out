@@ -1,4 +1,8 @@
 [debug] [software-engineering-battleship-build] Classpath dependencies List()
 [debug] [software-engineering-battleship-build] Dependencies from configurations List()
+<<<<<<< HEAD
 [debug] Bloop wrote the configuration of project 'software-engineering-battleship-build' to 'C:\0_Privat\1_HTWG_AIN\1_Semester 3\2_SoftwareEngineering\Software-Engineering---Battleship\project\.bloop\software-engineering-battleship-build.json'
+=======
+[debug] Bloop wrote the configuration of project 'software-engineering-battleship-build' to 'C:\Users\mikai\Documents\HTWG\Semester03\Software eng\Software-Engineering---Battleship\project\.bloop\software-engineering-battleship-build.json'
+>>>>>>> de17ed6bfc85310c67c3648e65a8fd63314bc952
 [success] Generated .bloop\software-engineering-battleship-build.json
