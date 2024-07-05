@@ -1,5 +1,6 @@
 import com.google.inject.AbstractModule
 import com.google.inject.name.Names
+import fileIO.*
 
 class FileIOModule extends AbstractModule {
   override def configure(): Unit = {

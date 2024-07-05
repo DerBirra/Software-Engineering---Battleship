@@ -10,6 +10,7 @@ import model.modelComponent.GameBoardInterface
 import controller.controllerComponent.controllerIf
 import com.google.inject.Inject
 import com.google.inject.name.Named
+import fileIO.FileIO
 
 class Controller @Inject()
     (var gameBoard1: GameBoardInterface, var gameBoard2: GameBoardInterface, @Named("xml") xmlFileIO: FileIO, @Named("json") jsonFileIO: FileIO) 
@@ -19,6 +20,7 @@ class Controller @Inject()
     private var currentPlayer: Int = 1
     private var state: GameState = GameState(gameBoard1, gameBoard2, currentPlayer)
     private var placeShipStrategy: Option[PlaceShipStategyTemplate] = None
+    private var shotsCount: Map[Int, Int] = Map(1 -> 0, 2 -> 0)
 
     def setPlaceShipStrategy(strategy: PlaceShipStategyTemplate): Unit = {
         placeShipStrategy = Some(strategy)
@@ -27,6 +29,8 @@ class Controller @Inject()
     def startGame(player: Int): Unit = {
 
         if(player == 2) return
+
+        
 
         state.gameBoard1.generateField()
         state.gameBoard2.generateField()
@@ -110,6 +114,8 @@ class Controller @Inject()
     
     }
 
+    def getShotsCount(player: Int): Int = shotsCount(player)
+
     def executeCommand(command: Command): Unit = {
         command.execute(this)
     }
@@ -138,6 +144,27 @@ class Controller @Inject()
             case Right(data) => println(s"Read JSON: $data")
             case Left(e) => println(s"Error reading JSON: $e")
         }
+    }
+
+    def saveToJSON(): Unit = {
+
+        val path = "src/main/scala/files/jsondatei.json"
+        jsonFileIO.write(path, s"Player: $currentPlayer\n")
+        jsonFileIO.writeGameField(path, gameBoard1.printField())
+        jsonFileIO.write(path, s"Player: ($currentPlayer+1) \n")
+        jsonFileIO.writeGameField(path, gameBoard2.printField())
+
+    }
+
+    def saveToXML(): Unit = {
+
+        val path = "src/main/scala/files/xmldatei.xml"
+        xmlFileIO.write(path, s"Player: $currentPlayer\n")
+        xmlFileIO.writeGameField(path, gameBoard1.printField())
+        xmlFileIO.write(path, s"Player: ($currentPlayer+1) \n")
+        xmlFileIO.writeGameField(path, gameBoard2.printField())
+
+
     }
 
     def getCurrentPlayer: Int = currentPlayer

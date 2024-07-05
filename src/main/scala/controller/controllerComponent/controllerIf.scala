@@ -39,7 +39,13 @@ trait controllerIf extends Observable {
 
   def getCurrentPlayer: Int
 
+  def getShotsCount(player: Int): Int 
+
   def processXML(filePath: String): Unit
 
   def processJSON(filePath: String): Unit
+
+  def saveToJSON(): Unit
+
+  def saveToXML(): Unit
 }

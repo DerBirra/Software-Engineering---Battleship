@@ -1,0 +1,7 @@
+.metals
+.bloop
+.cache
+.history
+.target
+project/project
+project/target
